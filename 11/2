@@ -1,0 +1,66 @@
+2856. 删除数对后的最小数组长度
+class Solution {
+public:
+    int minLengthAfterRemovals(vector<int>& nums) {
+        int n = nums.size();
+        int x = nums[n / 2];
+
+        int max_cnt = ranges::upper_bound(nums, x) - ranges::lower_bound(nums, x);
+        return max(max_cnt * 2 - n, n % 2);
+    }
+};
+假设 x 出现次数最多，其出现次数为 maxCnt。
+
+分类讨论：
+
+如果 maxCnt⋅2>n，其余所有 n−maxCnt 个数都要与 x 消除，所以最后剩下 maxCnt⋅2−n 个数。
+如果 maxCnt⋅2≤n 且 n 是偶数，那么可以把其余数消除至剩下 maxCnt 个数，然后再和 x 消除，最后剩下 0 个数。
+如果 maxCnt⋅2≤n 且 n 是奇数，同上，最后剩下 1 个数。
+所以本题核心是计算 maxCnt，这可以遍历一遍 nums 算出来。
+
+作者：灵茶山艾府
+链接：https://leetcode.cn/problems/minimum-array-length-after-pair-removals/solutions/2446146/olog-n-tan-xin-er-fen-cha-zhao-pythonjav-t3qn/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+✨ 官方的--自定义比较函数
+lower_bound( begin , end , val , less<type>() )
+上述代码中加入了 less<type>() 自定义比较函数：适用于从小到大排序的有序序列，从数组/容器的 beign 位置起，到 end-1 位置结束，查找第一个 大于等于 val 的数字
+lower_bound( begin , end , val , greater<type>() )
+上述代码中加入了 greater<type>() 自定义比较函数：适用于从大到小排序的有序序列，从数组/容器的 beign 位置起，到 end-1 位置结束，查找第一个 小于等于 val 的数字
+
+ lower : 返回 第一个 false 的元素     val 是自定义函数中的 第二个参数
+ upper : 返回 第一个 true 的元素
+ 找到 第 1 个小于 20 的元素
+ vector<int>::iterator it = lower_bound(v.begin(), v.end(), 20, cmp);
+
+
+
+
+
+2563. 统计公平数对的数目
+ class Solution {
+public:
+    long long countFairPairs(vector<int>& nums, int lower, int upper) {
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        long long ans = 0;
+//  寻找lower−nums[j]≤nums[i]≤upper−nums[j]的个数
+        for (int i = 0; i < n; i++) 
+        {
+            auto r = upper_bound(nums.begin(), nums.begin() + i, upper - nums[i]);
+            auto l = lower_bound(nums.begin(), nums.begin() + i, lower - nums[i]);
+            
+            ans += r - l;
+        }
+      
+        return ans;
+    }
+};
+由于排序不影响答案，可以先排序。
+
+然后枚举 nums[j]，那么 nums[i] 需要满足
+
+lower−nums[j]≤nums[i]≤upper−nums[j]
+并且 0≤i<j。
+
+我们可以计算出 ≤upper−nums[j] 的元素个数，减去 <lower−nums[j] 的元素个数，加入答案
